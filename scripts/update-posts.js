@@ -7,6 +7,11 @@ const CARD_LIMIT = 3;
 const ARTS = ['orbit', 'circuit', 'grid'];
 const OUTPUT_PATH = path.join(process.cwd(), 'posts.json');
 
+const FETCH_HEADERS = {
+  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'user-agent': 'TENHO posts updater (+https://taka03101111.github.io/TENHO_NEW_HP/)',
+};
+
 function decodeEntities(value = '') {
   const named = {
     amp: '&',
@@ -17,14 +22,14 @@ function decodeEntities(value = '') {
     nbsp: ' ',
   };
 
-  return value.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (_, entity) => {
+  return value.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (full, entity) => {
     if (entity[0] === '#') {
       const isHex = entity[1]?.toLowerCase() === 'x';
       const codePoint = Number.parseInt(entity.slice(isHex ? 2 : 1), isHex ? 16 : 10);
-      return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : _;
+      return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : full;
     }
 
-    return named[entity] || _;
+    return named[entity] || full;
   });
 }
 
@@ -120,24 +125,42 @@ function findFirstImg(html) {
   return normalizeUrl(src);
 }
 
-function extractImage(itemXml) {
+function extractImageFromHtml(html) {
+  if (!html) return null;
+
+  return findMetaImage(html, ['og:image'])
+    || findMetaImage(html, ['twitter:image'])
+    || findFirstImg(html);
+}
+
+function extractImageFromRssItem(itemXml) {
   const html = getTagContent(itemXml, 'content:encoded')
     || getTagContent(itemXml, 'description');
 
-  if (html) {
-    const ogImage = findMetaImage(html, ['og:image']);
-    if (ogImage) return ogImage;
-
-    const twitterImage = findMetaImage(html, ['twitter:image']);
-    if (twitterImage) return twitterImage;
-
-    const firstImg = findFirstImg(html);
-    if (firstImg) return firstImg;
-  }
-
-  return normalizeUrl(getTagAttribute(itemXml, 'media:thumbnail', 'url'))
+  return extractImageFromHtml(html)
+    || normalizeUrl(getTagAttribute(itemXml, 'media:thumbnail', 'url'))
     || normalizeUrl(getTagAttribute(itemXml, 'media:content', 'url'))
     || normalizeUrl(getTagAttribute(itemXml, 'enclosure', 'url'));
+}
+
+async function fetchText(url) {
+  const response = await fetch(url, { headers: FETCH_HEADERS });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${url}: ${response.status}`);
+  }
+
+  return response.text();
+}
+
+async function fetchArticleImage(link) {
+  try {
+    const html = await fetchText(link);
+    return extractImageFromHtml(html);
+  } catch (error) {
+    console.warn(`Could not fetch article image: ${link}`);
+    console.warn(error.message);
+    return null;
+  }
 }
 
 function parseItems(xml) {
@@ -158,7 +181,7 @@ function parseItems(xml) {
         category: 'NOTE',
         title: getTagContent(itemXml, 'title') || 'TENHO note',
         link: normalizeUrl(getTagContent(itemXml, 'link')) || NOTE_URL,
-        image: extractImage(itemXml),
+        image: extractImageFromRssItem(itemXml),
       };
     })
     .sort((a, b) => (b.timestamp - a.timestamp) || (a.originalIndex - b.originalIndex))
@@ -169,24 +192,29 @@ function parseItems(xml) {
     }));
 }
 
-async function main() {
-  const response = await fetch(NOTE_RSS, {
-    headers: {
-      accept: 'application/rss+xml, application/xml;q=0.9, text/xml;q=0.8',
-      'user-agent': 'TENHO posts updater (+https://taka03101111.github.io/TENHO_NEW_HP/)',
-    },
-  });
+async function fillMissingArticleImages(posts) {
+  const nextPosts = [...posts];
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch note RSS: ${response.status}`);
+  for (const [index, post] of nextPosts.entries()) {
+    if (post.image) continue;
+
+    const image = await fetchArticleImage(post.link);
+    nextPosts[index] = {
+      ...post,
+      image: image || null,
+    };
   }
 
-  const xml = await response.text();
+  return nextPosts;
+}
+
+async function main() {
+  const xml = await fetchText(NOTE_RSS);
   if (!xml.trim()) {
     throw new Error('Fetched note RSS is empty.');
   }
 
-  const posts = parseItems(xml);
+  const posts = await fillMissingArticleImages(parseItems(xml));
   if (!posts.length) {
     throw new Error('No posts were generated from note RSS.');
   }
