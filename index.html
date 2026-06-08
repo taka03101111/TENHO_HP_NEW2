@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>TENHO — 製造業 × AI × 未来</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="株式会社TENHOは、製造業のための生成AI内製化と、現場主導の改善が回り続ける持続可能な製造業を支援します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/site.css">
+<meta name="ext-resource-dependency" content="assets/TENHO-logo-black.png" data-resource-id="logoBlack" />
+</head>
+<body data-screen-label="TENHO Homepage">
+
+<template id="__bundler_thumbnail" data-bg-color="#ffffff">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#ffffff"/>
+    <ellipse cx="600" cy="400" rx="360" ry="210" fill="none" stroke="#BEDCFF" stroke-width="3"/>
+    <ellipse cx="600" cy="400" rx="240" ry="140" fill="none" stroke="#6FA8DC" stroke-width="2" opacity="0.5"/>
+    <text x="600" y="430" text-anchor="middle" font-family="Geist, sans-serif" font-weight="700" font-size="120" letter-spacing="8" fill="#0E0E0E">TENHO</text>
+    <circle cx="290" cy="250" r="5" fill="#6FA8DC"/>
+    <circle cx="910" cy="540" r="5" fill="#6FA8DC"/>
+    <circle cx="840" cy="230" r="4" fill="#0E0E0E" opacity="0.4"/>
+  </svg>
+</template>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="image-slot.js"></script>
+<script type="text/babel" src="components/Header.jsx"></script>
+<script type="text/babel" src="components/Top.jsx"></script>
+<script type="text/babel" src="components/Vision.jsx"></script>
+<script type="text/babel" src="components/How.jsx"></script>
+<script type="text/babel" src="components/WhyNow.jsx"></script>
+<script type="text/babel" src="components/WhyTenho.jsx"></script>
+<script type="text/babel" src="components/WhatMockups.jsx"></script>
+<script type="text/babel" src="components/What.jsx"></script>
+<script type="text/babel" src="components/More.jsx"></script>
+<script type="text/babel" src="components/Contact.jsx"></script>
+<script type="text/babel" src="components/Company.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  const [activeId, setActiveId] = React.useState('top');
+  const [scrolled, setScrolled] = React.useState(false);
+
+  // Scroll-spy: pick the section whose top crosses ~25% of viewport
+  React.useEffect(() => {
+    const ids = window.NAV_ITEMS.map(n => n.id);
+
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+      const probe = window.innerHeight * 0.32;
+      let current = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= probe) current = id;
+      }
+      setActiveId(current);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Reveal-on-scroll observer
+  React.useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(el => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      for (const ent of entries) {
+        if (ent.isIntersecting) {
+          ent.target.classList.add('in');
+          io.unobserve(ent.target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  });
+
+  return (
+    <React.Fragment>
+      <Header activeId={activeId} scrolled={scrolled} />
+      <main>
+        <Top />
+        <Vision />
+        <How />
+        <WhyNow />
+        <WhyTenho />
+        <What />
+        <More />
+        <Contact />
+        <Company />
+      </main>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
