@@ -2,6 +2,8 @@
 
 const NOTE_URL = 'https://note.com/tenho_ai';
 const CARD_LIMIT = 3;
+const ART_TYPES = ['orbit', 'circuit', 'grid'];
+const NOTE_PAGE_TIMEOUT = 6500;
 
 const LOADING_ITEMS = Array.from({ length: CARD_LIMIT }, (_, index) => ({
   date: '',
@@ -9,9 +11,15 @@ const LOADING_ITEMS = Array.from({ length: CARD_LIMIT }, (_, index) => ({
   title: '読み込み中',
   link: NOTE_URL,
   image: null,
-  art: ['orbit', 'circuit', 'grid'][index],
+  art: ART_TYPES[index],
   loading: true,
 }));
+
+const NOTE_PAGE_FETCHERS = [
+  (url) => url,
+  (url) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  (url) => 'https://corsproxy.io/?url=' + encodeURIComponent(url),
+];
 
 async function fetchLatestNotes() {
   const res = await fetch('./posts.json', { cache: 'no-store' });
@@ -31,9 +39,92 @@ async function fetchLatestNotes() {
     category: post.category || 'NOTE',
     title: post.title || 'TENHO note',
     link: post.link || NOTE_URL,
-    image: post.image || null,
-    art: post.art || ['orbit', 'circuit', 'grid'][index],
+    image: null,
+    art: post.art || ART_TYPES[index],
   }));
+}
+
+function requestSignal(timeout) {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), timeout);
+
+  return {
+    signal: controller.signal,
+    done: () => window.clearTimeout(timer),
+  };
+}
+
+function normalizeImageUrl(url) {
+  if (!url) return null;
+
+  try {
+    return new URL(url.trim(), NOTE_URL).toString();
+  } catch (_) {
+    return null;
+  }
+}
+
+function parseAttributes(tag) {
+  const attrs = {};
+  const pattern = /([\w:-]+)\s*=\s*(['"])(.*?)\2/g;
+  let match;
+
+  while ((match = pattern.exec(tag))) {
+    attrs[match[1].toLowerCase()] = match[3].trim();
+  }
+
+  return attrs;
+}
+
+function findMetaImage(html, keys) {
+  const metas = html.match(/<meta\b[^>]*>/gi) || [];
+
+  for (const meta of metas) {
+    const attrs = parseAttributes(meta);
+    const name = (attrs.property || attrs.name || '').toLowerCase();
+
+    if (keys.includes(name) && attrs.content) {
+      return normalizeImageUrl(attrs.content);
+    }
+  }
+
+  return null;
+}
+
+function findNoteCoverImage(html) {
+  return findMetaImage(html, ['og:image'])
+    || findMetaImage(html, ['twitter:image']);
+}
+
+async function fetchNotePageHtml(link) {
+  for (const buildUrl of NOTE_PAGE_FETCHERS) {
+    const request = requestSignal(NOTE_PAGE_TIMEOUT);
+
+    try {
+      const res = await fetch(buildUrl(link), {
+        cache: 'no-store',
+        signal: request.signal,
+      });
+
+      if (!res.ok) continue;
+
+      const html = await res.text();
+      if (html.includes('og:image') || html.includes('twitter:image')) {
+        return html;
+      }
+    } catch (_) {
+      // Try the next fetcher. Direct note access often fails in browsers because of CORS.
+    } finally {
+      request.done();
+    }
+  }
+
+  return null;
+}
+
+async function fetchNoteCoverImage(link) {
+  const html = await fetchNotePageHtml(link);
+  return html ? findNoteCoverImage(html) : null;
 }
 
 function ThumbArt({ kind, image }) {
@@ -154,10 +245,23 @@ function More() {
 
     fetchLatestNotes()
       .then((posts) => {
-        if (mounted && posts.length) {
-          setItems(posts);
-          setFailed(false);
-        }
+        if (!mounted || !posts.length) return;
+
+        setItems(posts);
+        setFailed(false);
+
+        (async () => {
+          const nextItems = [...posts];
+
+          for (const [index, post] of posts.entries()) {
+            const image = await fetchNoteCoverImage(post.link);
+            if (!mounted) return;
+            if (!image) continue;
+
+            nextItems[index] = { ...nextItems[index], image };
+            setItems([...nextItems]);
+          }
+        })();
       })
       .catch(() => {
         if (mounted) {

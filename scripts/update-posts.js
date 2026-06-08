@@ -7,11 +7,6 @@ const CARD_LIMIT = 3;
 const ARTS = ['orbit', 'circuit', 'grid'];
 const OUTPUT_PATH = path.join(process.cwd(), 'posts.json');
 
-const FETCH_HEADERS = {
-  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'user-agent': 'TENHO posts updater (+https://taka03101111.github.io/TENHO_NEW_HP/)',
-};
-
 function decodeEntities(value = '') {
   const named = {
     amp: '&',
@@ -51,15 +46,6 @@ function getTagContent(xml, tagName) {
   return match ? cleanText(match[1]) : '';
 }
 
-function getTagAttribute(xml, tagName, attrName) {
-  const pattern = tagPattern(tagName);
-  const tag = xml.match(new RegExp(`<${pattern}\\b[^>]*>`, 'i'))?.[0];
-  if (!tag) return '';
-
-  const attr = tag.match(new RegExp(`\\s${attrName}\\s*=\\s*(['"])(.*?)\\1`, 'i'));
-  return attr ? cleanText(attr[2]) : '';
-}
-
 function getItemDateValue(itemXml) {
   return getTagContent(itemXml, 'pubDate')
     || getTagContent(itemXml, 'dc:date')
@@ -84,85 +70,6 @@ function normalizeUrl(url) {
   }
 }
 
-function parseAttrs(tag) {
-  const attrs = {};
-  const attrPattern = /([\w:-]+)\s*=\s*(['"])(.*?)\2/g;
-  let match;
-
-  while ((match = attrPattern.exec(tag))) {
-    attrs[match[1].toLowerCase()] = cleanText(match[3]);
-  }
-
-  return attrs;
-}
-
-function findMetaImage(html, names) {
-  const metas = html.match(/<meta\b[^>]*>/gi) || [];
-
-  for (const meta of metas) {
-    const attrs = parseAttrs(meta);
-    const key = (attrs.property || attrs.name || '').toLowerCase();
-    if (names.includes(key) && attrs.content) {
-      return normalizeUrl(attrs.content);
-    }
-  }
-
-  return null;
-}
-
-function findFirstImg(html) {
-  const img = html.match(/<img\b[^>]*>/i)?.[0];
-  if (!img) return null;
-
-  const attrs = parseAttrs(img);
-  const src = attrs.src
-    || attrs['data-src']
-    || attrs['data-original']
-    || attrs['data-lazy-src']
-    || attrs.srcset?.split(',')[0]?.trim().split(/\s+/)[0]
-    || attrs['data-srcset']?.split(',')[0]?.trim().split(/\s+/)[0];
-
-  return normalizeUrl(src);
-}
-
-function extractImageFromHtml(html) {
-  if (!html) return null;
-
-  return findMetaImage(html, ['og:image'])
-    || findMetaImage(html, ['twitter:image'])
-    || findFirstImg(html);
-}
-
-function extractImageFromRssItem(itemXml) {
-  const html = getTagContent(itemXml, 'content:encoded')
-    || getTagContent(itemXml, 'description');
-
-  return extractImageFromHtml(html)
-    || normalizeUrl(getTagAttribute(itemXml, 'media:thumbnail', 'url'))
-    || normalizeUrl(getTagAttribute(itemXml, 'media:content', 'url'))
-    || normalizeUrl(getTagAttribute(itemXml, 'enclosure', 'url'));
-}
-
-async function fetchText(url) {
-  const response = await fetch(url, { headers: FETCH_HEADERS });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url}: ${response.status}`);
-  }
-
-  return response.text();
-}
-
-async function fetchArticleImage(link) {
-  try {
-    const html = await fetchText(link);
-    return extractImageFromHtml(html);
-  } catch (error) {
-    console.warn(`Could not fetch article image: ${link}`);
-    console.warn(error.message);
-    return null;
-  }
-}
-
 function parseItems(xml) {
   const itemMatches = xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
   if (!itemMatches.length) {
@@ -181,7 +88,7 @@ function parseItems(xml) {
         category: 'NOTE',
         title: getTagContent(itemXml, 'title') || 'TENHO note',
         link: normalizeUrl(getTagContent(itemXml, 'link')) || NOTE_URL,
-        image: extractImageFromRssItem(itemXml),
+        image: null,
       };
     })
     .sort((a, b) => (b.timestamp - a.timestamp) || (a.originalIndex - b.originalIndex))
@@ -192,29 +99,24 @@ function parseItems(xml) {
     }));
 }
 
-async function fillMissingArticleImages(posts) {
-  const nextPosts = [...posts];
+async function main() {
+  const response = await fetch(NOTE_RSS, {
+    headers: {
+      accept: 'application/rss+xml, application/xml;q=0.9, text/xml;q=0.8',
+      'user-agent': 'TENHO posts updater (+https://taka03101111.github.io/TENHO_NEW_HP/)',
+    },
+  });
 
-  for (const [index, post] of nextPosts.entries()) {
-    if (post.image) continue;
-
-    const image = await fetchArticleImage(post.link);
-    nextPosts[index] = {
-      ...post,
-      image: image || null,
-    };
+  if (!response.ok) {
+    throw new Error(`Failed to fetch note RSS: ${response.status}`);
   }
 
-  return nextPosts;
-}
-
-async function main() {
-  const xml = await fetchText(NOTE_RSS);
+  const xml = await response.text();
   if (!xml.trim()) {
     throw new Error('Fetched note RSS is empty.');
   }
 
-  const posts = await fillMissingArticleImages(parseItems(xml));
+  const posts = parseItems(xml);
   if (!posts.length) {
     throw new Error('No posts were generated from note RSS.');
   }
