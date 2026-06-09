@@ -2,7 +2,7 @@
 
 const NOW_CONCERNS = [
   {
-    num: '01', label: '人材不足', note: '現場の手が減る',
+    num: '01', label: '人材不足', note: '現場の負担が増えている',
     icon: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="18" cy="16" r="6"/>
@@ -12,7 +12,17 @@ const NOW_CONCERNS = [
     ),
   },
   {
-    num: '02', label: '技術継承', note: '暗黙知が失われる',
+    num: '02', label: '属人化', note: '判断や対応が人に依存している',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="10" y="8" width="20" height="28" rx="2"/>
+        <path d="M16 16h8M16 22h8M16 28h6"/>
+        <path d="M30 14 L42 14 L42 42 L24 42 L24 36"/>
+      </svg>
+    ),
+  },
+  {
+    num: '03', label: '技術継承', note: 'ベテランの知見が残りにくい',
     icon: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="14" r="5"/><circle cx="36" cy="14" r="5"/>
@@ -23,32 +33,22 @@ const NOW_CONCERNS = [
     ),
   },
   {
-    num: '03', label: '属人化', note: '知見が共有されない',
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="10" y="8" width="20" height="28" rx="2"/>
-        <path d="M16 16h8M16 22h8M16 28h6"/>
-        <path d="M30 14 L42 14 L42 42 L24 42 L24 36"/>
-      </svg>
-    ),
-  },
-  {
-    num: '04', label: '生産性', note: '改善に手が回らない',
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 40 L6 8"/><path d="M6 40 L42 40"/>
-        <path d="M12 32 L18 24 L24 28 L32 16 L40 12"/>
-        <circle cx="40" cy="12" r="2"/>
-      </svg>
-    ),
-  },
-  {
-    num: '05', label: 'DX遅れ', note: 'AIが定着しない',
+    num: '04', label: '定型業務過多', note: '価値ある仕事に時間を使えない',
     icon: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="24" cy="24" r="14"/>
         <path d="M24 14 L24 24 L31 28"/>
         <path d="M38 10 L42 6"/><path d="M10 38 L6 42"/>
+      </svg>
+    ),
+  },
+  {
+    num: '05', label: 'AI格差', note: '活用できる企業との差が広がる',
+    icon: (
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 40 L6 8"/><path d="M6 40 L42 40"/>
+        <path d="M12 32 L18 24 L24 28 L32 16 L40 12"/>
+        <circle cx="40" cy="12" r="2"/>
       </svg>
     ),
   },
@@ -66,7 +66,8 @@ function WhyNow() {
             <div className="head-en reveal head-en--inline" data-delay="1">Why Now</div>
           </div>
           <h2 className="now-headline reveal" data-delay="2">
-            AI活用は、<br/><span className="em">待ったなし。</span>
+            AI時代に問われるのは、<br/>
+            人の価値を<span className="em">どう引き出すか。</span>
           </h2>
         </div>
 
@@ -89,8 +90,8 @@ function WhyNow() {
           <span className="now-corner bl"></span>
           <span className="now-corner br"></span>
           <p className="now-warning">
-            AIを使いこなす企業と、<br/>
-            使えない企業の差が、これから<span className="em">一気に広がる。</span>
+            AIを使うことが目的ではありません。<br/>
+            人の価値を最大化させる現場をつくることが、これからの<span className="em">競争力に。</span>
           </p>
         </div>
       </div>

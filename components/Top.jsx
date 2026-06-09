@@ -94,12 +94,6 @@ function Top() {
           </svg>
         </div>
 
-        <div className="top-eyebrow">
-          <span className="eyebrow">
-            <span className="eyebrow-num">01 / 09</span> TENHO · MANUFACTURING × AI × FUTURE
-          </span>
-        </div>
-
         <div className="top-headline-h" role="heading" aria-level="1">
           現場の知恵を、<span className="accent">AI</span>で次世代へ。
         </div>
