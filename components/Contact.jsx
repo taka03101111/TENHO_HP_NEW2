@@ -121,12 +121,13 @@ function Contact() {
             </div>
           </div>
 
-         <img
-           id="contact-visual"
-           className="contact-visual reveal"
-           data-delay="2"
-           src="asahi.jpg"
-        />
+          <img
+            id="contact-visual"
+            className="contact-visual reveal"
+            data-delay="2"
+            src="./asahi.jpg"
+            alt="TENHOのオフィスイメージ"
+            />
         </div>
       </div>
     </section>
