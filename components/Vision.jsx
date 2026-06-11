@@ -17,9 +17,9 @@ function Vision() {
         </div>
 
         <div className="vision-body reveal" data-delay="2">
-          <span className="ln dim">人がいないと止まる現場から、</span>
-          <span className="ln">AIと共に<span className="em">回り続ける現場</span>へ。</span>
-          <span className="ln dim">改善が、文化になる。</span>
+          <span className="ln dim">AIに任せる仕事を見極め、</span>
+          <span className="ln">人は、<span className="em">人にしかできない仕事</span>を。</span>
+          <span className="ln dim">現場の力が、もっと活きる未来へ。</span>
         </div>
 
         <div className="vision-quote reveal" data-delay="4">

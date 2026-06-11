@@ -3,9 +3,9 @@
 
 const COMPANY_ROWS = [
   { k: 'Company',        jp: '会社名',     v: '株式会社 TENHO（TENHO inc.）' },
-  { k: 'Founded',        jp: '設立',       v: '2023年5月' },
+  { k: 'Founded',        jp: '設立',       v: '2023年4月' },
   { k: 'Representative', jp: '代表者',     v: '代表取締役　田村 允 ／ 土田 龍矢' },
-  { k: 'Capital',        jp: '資本金',     v: '1,000万円' },
+  { k: 'Capital',        jp: '資本金',     v: '3,400万円' },
   {
     k: 'Address', jp: '所在地',
     v: (

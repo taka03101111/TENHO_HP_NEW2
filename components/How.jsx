@@ -38,13 +38,13 @@ function How() {
         <div className="how-layout">
           <div className="how-text reveal" data-delay="3">
             <div className="how-headline">
-              製造業の未来を、現場から変えていく。<br/>
-              <span className="em">仕組み</span>を共につくる。
+              AIで置き換えるのではなく、<br/>
+              人が価値を出せる<span className="em">仕組み</span>を共につくる。
             </div>
             <p className="how-sub">
-              業務棚卸しからPoC、AIエージェントの試作、社内ルール整備、
-              効果測定、横展開まで。現場の声を反映しながら、自社でAIを
-              育てて使い続ける体制を、伴走で構築します。
+              業務を整理し、AIに任せる仕事と、人が担うべき仕事を見極めます。
+              その上で、AIエージェント構築・人材育成・PoC・社内展開まで伴走し、
+              外部に依存せず、内製で改善し続けられる体制をつくります。
             </p>
           </div>
 
