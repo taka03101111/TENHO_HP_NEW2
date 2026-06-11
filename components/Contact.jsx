@@ -121,14 +121,12 @@ function Contact() {
             </div>
           </div>
 
-          <image-slot
-            id="contact-visual"
-            className="contact-visual reveal"
-            data-delay="2"
-            shape="rounded"
-            radius="8"
-            placeholder="オフィス・チーム等の画像"
-          ></image-slot>
+         <img
+           id="contact-visual"
+           className="contact-visual reveal"
+           data-delay="2"
+           src="../asahi.jpg"
+        />
         </div>
       </div>
     </section>
