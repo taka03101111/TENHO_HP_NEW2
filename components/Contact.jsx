@@ -125,7 +125,7 @@ function Contact() {
            id="contact-visual"
            className="contact-visual reveal"
            data-delay="2"
-           src="../asahi.jpg"
+           src="/asahi.jpg"
         />
         </div>
       </div>
