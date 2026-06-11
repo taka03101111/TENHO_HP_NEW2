@@ -125,7 +125,7 @@ function Contact() {
             id="contact-visual"
             className="contact-visual reveal"
             data-delay="2"
-            src="./assets/asahi.jpg"
+            src="./assets/asahi.png"
             alt="TENHOのオフィスイメージ"
             />
         </div>
