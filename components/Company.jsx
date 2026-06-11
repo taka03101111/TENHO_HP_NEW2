@@ -55,7 +55,12 @@ function Company() {
 
         <div className="company-footer">
           <div className="brand">
-            <img src={(window.__resources && window.__resources.logoBlack) || "assets/TENHO-logo-black.png"} alt="TENHO" />
+            <div className="brand-row">
+              <img className="brand-logo" src={(window.__resources && window.__resources.logoBlack) || "assets/TENHO-logo-black.png"} alt="TENHO" />
+              <span className="brand-sep" aria-hidden="true"></span>
+              <img className="cert-pmark" src="assets/pmark.png" alt="プライバシーマーク 登録番号 17004969" />
+              <img className="cert-partner" src="assets/claude-partner.png" alt="Claude Partner Network — Preferred Services Partner" />
+            </div>
             <p>Manufacturing × AI × Future</p>
           </div>
           <div className="copyright">

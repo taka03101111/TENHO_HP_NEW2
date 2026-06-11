@@ -39,6 +39,7 @@ const WHAT_PILLARS = [
   {
     num: '01',
     en: 'Academy',
+    logo: 'assets/logo-academy.png',
     variant: 'academy',
     sub: 'AIを使える人を育て、現場に活用を定着させる。',
     items: [
@@ -62,6 +63,7 @@ const WHAT_PILLARS = [
   {
     num: '02',
     en: 'Technology',
+    logo: 'assets/logo-technology.png',
     variant: 'tech',
     sub: '現場で使えるAIプロダクトで、業務活用を加速させる。',
     items: [
@@ -171,8 +173,7 @@ function What() {
               <div className="what3-pillarhead">
                 <span className="what3-pillarhead__num">{p.num}</span>
                 <div className="what3-pillarhead__name">
-                  <span className="brand">TENHO</span>
-                  <span className="big">{p.en}</span>
+                  <img className="what3-pillarhead__logo" src={p.logo} alt={"TENHO " + p.en} />
                 </div>
                 <p className="what3-pillarhead__sub">{p.sub}</p>
               </div>
