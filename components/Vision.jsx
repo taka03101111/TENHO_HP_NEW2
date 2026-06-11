@@ -1,11 +1,10 @@
-// TENHO HP — Vision
-// Big serif one-liner with proper breakpoints so it never breaks mid-phrase.
+// TENHO HP - Vision
 
 function Vision() {
   return (
     <section id="vision" data-screen-label="02 Vision">
       <div className="shell">
-        <div className="section-index">02 / 09 — VISION</div>
+        <div className="section-index">02 / 09 - VISION</div>
 
         <div className="section-head section-head--solo">
           <div className="head-left">
@@ -17,13 +16,15 @@ function Vision() {
         </div>
 
         <div className="vision-body reveal" data-delay="2">
-          <span className="ln dim">人がいないと止まる現場から、</span>
-          <span className="ln">AIと共に<span className="em">回り続ける現場</span>へ。</span>
-          <span className="ln dim">改善が、文化になる。</span>
+          <span className="ln">AIで置き換えるのではなく、</span>
+          <span className="ln">人が価値を出せる</span>
+          <span className="ln">仕組みを共につくる。</span>
         </div>
 
-        <div className="vision-quote reveal" data-delay="4">
-          — Manufacturing knowledge, encoded for the next generation.
+        <div className="vision-quote vision-copy reveal" data-delay="4">
+          <span className="ln">業務を整理し、AIに任せる仕事と、人が担うべき仕事を見極めます。</span>
+          <span className="ln">その上で、AIエージェント構築・人材育成・PoC・社内展開まで伴走し、</span>
+          <span className="ln">外部に依存せず、内製で改善し続けられる体制をつくります。</span>
         </div>
       </div>
     </section>

@@ -31,16 +31,21 @@ const WT_ICONS = {
 
 const WT_STATS = [
   {
-    icon: 'people', figure: '2.5', unit: '年+', label: '伴走実績',
-    desc: ['中小製造業の現場に寄り添い、', '2.5年以上の伴走支援を継続。'],
+    icon: 'cap', figure: '3', unit: '年', label: '製造業支援の知見',
+    desc: ['現場に向き合ってきた知見を、', 'AI実装に活かす。'],
   },
   {
-    icon: 'chart', figure: '1億', unit: '円+', label: '削減実績',
-    desc: ['AI活用による業務改善・自動化で、', '累計1億円以上のコスト削減を実現。'],
+    icon: 'chart',
+    dual: [
+      { n: '−1億', u: '円', c: '削減' },
+      { n: '+1,500万', u: '円', c: '創出' },
+    ],
+    label: 'コスト削減 ＆ 売上創出',
+    desc: ['製造業1社において、AI活用による業務効率化で年間約１億円規模の削減効果、', '新規事業創出により年間約1,500万円規模の売上機会を創出。'],
   },
   {
-    icon: 'cap', figure: '45,000', unit: '+', label: '累計受講者数',
-    desc: ['AI研修・人材育成を通じて、', '45,000名以上が学習。'],
+    icon: 'people', figure: '45,000', unit: '人', label: '累計受講者数',
+    desc: ['AIを学び、現場で活かす人材を', '育ててきました。'],
   },
 ];
 
@@ -57,8 +62,8 @@ function WhyTenho() {
               Why TENHO
             </div>
             <div className="head-jp is-serif reveal" data-delay="2" style={{ marginTop: 16 }}>
-              <span className="em">製造業</span>を、誰よりも知っている。<br/>
-              <span className="em">AI</span>を、誰よりも実装できる。
+              現地現物で、現場を理解する。<br/>
+              人とAIが共に働く仕組みを、共につくる。
             </div>
           </div>
         </div>
@@ -67,9 +72,20 @@ function WhyTenho() {
           {WT_STATS.map((s, i) => (
             <div key={s.label} className="wt-col reveal" data-delay={i + 1}>
               <div className="wt-icon">{WT_ICONS[s.icon]}</div>
-              <div className="wt-figure">
-                {s.figure}<span className="unit">{s.unit}</span>
-              </div>
+              {s.dual ? (
+                <div className="wt-figure wt-figure--dual">
+                  {s.dual.map((d, di) => (
+                    <span className="wt-dual-row" key={di}>
+                      <span className="num">{d.n}<span className="unit">{d.u}</span></span>
+                      <span className="cap">{d.c}</span>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="wt-figure">
+                  {s.figure}<span className="unit">{s.unit}</span>
+                </div>
+              )}
               <div className="wt-label">{s.label}</div>
               <div className="wt-desc">
                 {s.desc.map((d, di) => <span key={di}>{d}<br/></span>)}

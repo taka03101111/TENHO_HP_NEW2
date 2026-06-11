@@ -39,20 +39,21 @@ const WHAT_PILLARS = [
   {
     num: '01',
     en: 'Academy',
+    logo: 'assets/logo-academy.png',
     variant: 'academy',
-    sub: '人を起点に、AI活用を社内に定着させる。',
+    sub: 'AIを使える人を育て、現場に活用を定着させる。',
     items: [
       {
         icon: 'internalize',
         name: '生成AI内製化支援',
-        desc: '現場の課題を起点に、AI活用を“自分たちで回せる”体制を伴走でつくる。',
+        desc: '現場の業務課題を起点に、AI活用を自社で続けられる組織づくりを伴走します。',
         tags: ['伴走', '内製化', '研修'],
         textOnly: true,
       },
       {
         icon: 'cowork',
         name: 'AI Cowork',
-        desc: 'Slack上で秘書AI・議事録AIが稼働。日程調整から議事録・タスク抽出まで自動化する。',
+        desc: 'チャット上で、議事録共有・情報検索・日程調整・タスク抽出等を支援。日常業務の中に、AIが自然に入り込む環境をつくります。',
         tags: ['実装', 'エージェント', '働き方'],
         link: 'https://tenho7.jp/aicowork-lp/',
         mockup: 'cowork',
@@ -62,13 +63,17 @@ const WHAT_PILLARS = [
   {
     num: '02',
     en: 'Technology',
+    logo: 'assets/logo-technology.png',
     variant: 'tech',
-    sub: '製品で、現場のAI活用をダイレクトに加速させる。',
+    sub: '現場で使えるAIプロダクトで、業務活用を加速させる。',
     items: [
       {
         icon: 'synapse',
         name: 'シナプスAI',
-        desc: 'GPT・Claude・Geminiを切り替えられる企業向け生成AIプラットフォーム。',
+        desc: [
+          'GPT・Claude・Geminiを安全に使い分けられる、',
+          '法人向け生成AIプラットフォーム。',
+        ],
         tags: ['マルチモデル', 'RAG', 'セキュア'],
         link: 'https://tenho7.jp/synapse-lp/',
         mockup: 'synapse',
@@ -76,13 +81,30 @@ const WHAT_PILLARS = [
       {
         icon: 'densho',
         name: 'DENSHO AI',
-        desc: '保全業務に特化したAIアシスタント。過去トラ検索や対応手順で属人化を解消する。',
+        desc: [
+          '過去トラブル・対応履歴・技術ナレッジを活用し、',
+          '業務の属人化を防ぐAIアシスタント。',
+        ],
         tags: ['保全', '技能継承', 'チャット'],
         mockup: 'densho',
       },
     ],
   },
 ];
+
+function ServiceDescription({ desc }) {
+  if (Array.isArray(desc)) {
+    return (
+      <p className="svc-desc">
+        {desc.map((line, index) => (
+          <span className="svc-desc__line" key={index}>{line}</span>
+        ))}
+      </p>
+    );
+  }
+
+  return <p className="svc-desc">{desc}</p>;
+}
 
 function ServiceText({ it }) {
   return (
@@ -92,7 +114,7 @@ function ServiceText({ it }) {
         {it.name}
         {it.link ? <span className="svc-arr">↗</span> : null}
       </div>
-      <p className="svc-desc">{it.desc}</p>
+      <ServiceDescription desc={it.desc} />
       <div className="svc-tags">
         {it.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
       </div>
@@ -110,7 +132,7 @@ function ServiceRow({ it, mediaSide }) {
           <div className="svc-icon">{WHAT_ICONS[it.icon]}</div>
           <div className="svc-textonly-main">
             <div className="svc-name">{it.name}</div>
-            <p className="svc-desc">{it.desc}</p>
+            <ServiceDescription desc={it.desc} />
           </div>
           <div className="svc-tags">
             {it.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
@@ -155,11 +177,12 @@ function What() {
           </div>
           <div className="what2-head__copy reveal" data-delay="2">
             <div className="head-jp is-serif">
-              2つの軸で、<br/>
-              <span className="em">現場のAI活用</span>を支える。
+              人を育て、仕組みをつくる。<br/>
+              2つの軸で、<span className="em">現場のAI活用</span>を支える。
             </div>
             <p className="what2-head__sub">
-              人を育て、仕組みをつくる。それが、TENHOのアプローチです。
+              AIに任せる仕事を見極め、人が価値を出せる現場をつくる。<br/>
+              それが、TENHOのアプローチです。
             </p>
           </div>
         </div>
@@ -170,8 +193,7 @@ function What() {
               <div className="what3-pillarhead">
                 <span className="what3-pillarhead__num">{p.num}</span>
                 <div className="what3-pillarhead__name">
-                  <span className="brand">TENHO</span>
-                  <span className="big">{p.en}</span>
+                  <img className="what3-pillarhead__logo" src={p.logo} alt={"TENHO " + p.en} />
                 </div>
                 <p className="what3-pillarhead__sub">{p.sub}</p>
               </div>
